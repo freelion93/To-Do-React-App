@@ -86,14 +86,17 @@ export default class App extends Component {
   }
 
   setFilter(items, show) {
-    if (show === "All") {
-      return items;
-    } else if (show === "Active") {
+    if (show === "Active") {
       const x = items.filter(el => el.done === false);
       return x;
     } else if (show === "Done") {
       const x = items.filter(el => el.done === true);
       return x;
+    } else if (show === "Favorites") {
+      const x = items.filter(el => el.important === true);
+      return x;
+    } else {
+      return items;
     }
   }
 
