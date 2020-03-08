@@ -1,0 +1,4 @@
+{
+  "python.pythonPath": "/Users/freelion/.local/share/virtualenvs/flask-server-FF7XRdEp/bin/python",
+  "python.linting.pylintArgs": ["--load-plugins", "pylint-flask"]
+}

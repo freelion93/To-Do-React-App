@@ -9,41 +9,70 @@ import AddItem from "../add-item";
 import "./app.css";
 
 export default class App extends Component {
-  startId = 0;
-
-  createItem = label => {
-    return {
-      label: label,
-      important: false,
-      done: false,
-      id: this.startId++
-    };
-  };
-
   state = {
-    todoData: [
-      this.createItem("Drink Coffee"),
-      this.createItem("Create App"),
-      this.createItem("Go To Sleep")
-    ],
+    todoData: [],
     term: "",
     toShow: "All"
   };
 
-  deleteItem = id => {
+  componentDidMount() {
+    fetch("/allTasks", { method: "GET" })
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(element => {
+          this.createItem(
+            element.id,
+            element.label,
+            element.important,
+            element.done
+          );
+        });
+        this.setState(({ todoData }) => {
+          return {
+            todoData: data
+          };
+        });
+      });
+  }
+
+  createItem = (id, label, important, done) => {
+    return {
+      id: id,
+      label: label,
+      important: important,
+      done: done
+    };
+  };
+
+  addItem = text => {
     this.setState(({ todoData }) => {
-      const idx = todoData.findIndex(el => el.id === id);
-      const returnVal = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
+      const id = todoData.length + 1;
+      const newTask = this.createItem(id, text, false, false);
+      fetch("/newTask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          label: newTask.label,
+          important: newTask.important,
+          done: newTask.done
+        })
+      });
+      const returnVal = [...todoData, newTask];
       return {
         todoData: returnVal
       };
     });
   };
 
-  addItem = text => {
-    const newTask = this.createItem(text);
+  deleteItem = id => {
     this.setState(({ todoData }) => {
-      const returnVal = [...todoData, newTask];
+      const idx = todoData.findIndex(el => el.id === id);
+      fetch("/deleteTask/" + id, {
+        method: "DELETE"
+      });
+      const returnVal = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
       return {
         todoData: returnVal
       };
@@ -53,7 +82,21 @@ export default class App extends Component {
   toogleProperty = (arr, id, propName) => {
     const idx = arr.findIndex(el => el.id === id);
     const oldItem = arr[idx];
-    const newItem = { ...oldItem, [propName]: !oldItem[propName] };
+    const newItem = {
+      ...oldItem,
+      [propName]: !oldItem[propName]
+    };
+    fetch("/updateTask/" + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        label: newItem.label,
+        important: newItem.important,
+        done: newItem.done
+      })
+    });
 
     return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
   };
