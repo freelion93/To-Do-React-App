@@ -1,3 +1,7 @@
 .add-item-form input {
   margin: 10px;
 }
+
+.warning {
+  color: goldenrod;
+}
