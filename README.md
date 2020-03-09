@@ -1,4 +1,4 @@
-# To-Do-React-App
+# To-Do-App
 
 ## Description
 This is the simple marklist application, which allows user to add, delete and mark the state of their tasks.
